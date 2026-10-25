@@ -1,28 +1,75 @@
-.TH TTYLOG 8 "2014-07-29" "" ""
+.TH TTYLOG 8 "2016-06-02" "" ""
 .SH NAME
 ttylog \- serial device logger
+.SH SYNOPSIS
+.B ttylog
+[-b|--baud] [-m|--mode] [-d|--device] [-f|--flush] [-s|--stamp] [-t|--timeout] [-F|--format] [-l|--limit] [--rts] [--dtr] > /path/to/log-file
+.PP
+If you are not using the timeout option, you can stop it running by pressing a
+ctrl-c when it's going to the screen or doing "kill -HUP nnnn" (where nnnn is
+the process ID for ttylog) if running in the background.
 .SH DESCRIPTION
-This program writes everything comes from a serial device
-from /dev/tty* onto stdout. You can specify device and baud rate
-of the device.
+This program writes everything that comes from a serial device like /dev/ttyS1
+onto stdout. You can specify the device and the baud rate of the device.
 .SH OPTIONS
-ttylog follows the GNU command line syntax.
+ttylog follows the GNU command line syntax, with long options
+starting with two dashes('-').
+A summary of the options is included below:
 .TP
 .B -h, --help
 Displays a little help
 .TP
 .B -v, --version
-Version number of ttylog
+Version number of ttylog plus Copyright information
 .TP
 .B -b, --baud
-Baud rate of the device. Available baud rates:
-300, 1200, 2400, 4800, 9600, 19200, 38400, 57600 and 115200
+Baud rate of the device. Available standard baud rates:
+300, 1200, 2400, 4800, 9600, 19200, 38400, 57600
+Additional baud rates, available if supported by the system:
+28800, 115200, 230400, 460800, 500000, 576000, 921600, 1000000, 1152000,
+1500000, 2000000, 2500000, 3000000, 3500000, 4000000.
 .TP
-.B -d --device
+.B -m, --mode
+Set serial port mode. Default mode is 8N1 (8 data bits, no parity, 1 stop bit).
+Possible options are: 7 or 8 for data bits, 1 or 2 for stop bits.
+For parity: N (no parity), E (even parity), O (odd parity), M (mark parity),
+S (space parity).
+.TP
+.B -d, --device
 The serial device. For example /dev/ttyS1
 .TP
-.B -f --flush
+.B -f, --flush
 Output buffers are flushed after every write.
+.TP
+.B -s --stamp
+Prefix each line with timestamp. Timestamp format can be none, old, iso, ms, us.
+In case of no format, old format is assumed, like 'WDAY MON DD HH:mm:ss YYYY'.
+The iso format is ISO8601, like 'YYYY-MM-DDTHH:mm:ss.sss'.
+The ms format is number of milliseconds (9 digits) from the program startup,
+like 'nnn.nnn.nnn'.
+The us format is number of microseconds (12 digits) from the program startup,
+like 'nnn.nnn.nnn.nnn'.
+.TP
+.B -t, --timeout
+How long to run ttylog, in seconds.
+.TP
+.B -F, --format
+Set output format to one of a[scii] (default), h[ex], H[EX], r[aw].
+Output format ascii is the same as in previous versions of ttylog, ttylog expects
+EOL characters in the stream.
+Output format hex is for HEX output using lowercase abcdef characters.
+Output format HEX is for HEX output using uppercase ABCDEF characters.
+Output format raw is the same as ascii, but fread() is used instead fgets().
+.TP
+.B -l, --limit
+Limit line length.
+If format is hex or HEX this is actually a byte count limit, not line length limit.
+.TP
+.B --rts
+Set RTS line state to 0 or 1.
+.TP
+.B --dtr
+Set DTR line state to 0 or 1.
 .SH AUTHOR
 This manual page was originally written by Tibor Koleszar <t.koleszar@somogy.hu>,
 for the Debian GNU/Linux system.  Modifications and updates written by
